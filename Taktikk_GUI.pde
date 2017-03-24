@@ -118,9 +118,25 @@ void draw() {    // Called for every fram
 
 void mousePressed() {
   if (mouseInside(war)) {
-    circleColor1 = white;
-    circleColor2 = green;
+    if (circleColor1 == white && circleColor2 == green) {
+      circleColor1 = red;
+      circleColor2 = white;
+    }
+    else {
+      circleColor1 = white;
+      circleColor2 = green;
+      btWrite("w");
+    }
   }
+  else if (mouseInside(suicide)) {
+    btWrite("s");
+  }
+  else if (mouseInside(Chill)) {
+    btWrite("c");
+  }
+  else if (mouseInside(tactical)) {
+    btWrite("t");
+  }  
 }
 
 void mouseReleased() {
