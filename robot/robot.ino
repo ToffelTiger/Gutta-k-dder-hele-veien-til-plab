@@ -5,7 +5,10 @@
 #include <NewServo.h>
 #include <Pushbutton.h>
 #include <PLab_ZumoMotors.h>
+#include <PLabBTSerial.h>
 
+#define txPin 2
+#define rxPin 3
 
 #define LED 13
 // this might need to be tuned for different lighting conditions, surfaces, etc.
@@ -20,7 +23,9 @@
 ZumoMotors motors;
 PLab_ZumoMotors plabMotors;
 Pushbutton button(ZUMO_BUTTON); // pushbutton on pin 12
- 
+
+PLabBTSerial btSerial(txPin, rxPin);
+
 #define NUM_SENSORS 6
 unsigned int sensor_values[NUM_SENSORS];
  
@@ -48,6 +53,7 @@ boolean turnedYet = false;
 
 void setup() {
   Serial.begin(9600);
+  btSerial.begin(9600);
   pinMode(ledPin,OUTPUT);
   myServo.attach(servoPin); 
   myServo.write(90-30);
@@ -127,5 +133,21 @@ void loop() {
     motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
   }
 */
+
+  while (btSerial.available()) {
+    char c = btSerial.read();
+    Serial.write(c);
+
+    if (c == 'w') {
+      Serial.write("war mode");
+    } else if (c == 's') {
+      Serial.write("suicide mode");
+    } else if (c == 't') {
+      Serial.write("tiss mode");
+    } else if (c == 'c') {
+      Serial.write("chill mode");
+    }
+  }
+  
 }
 
