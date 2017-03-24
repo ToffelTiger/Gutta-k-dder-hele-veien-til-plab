@@ -76,12 +76,12 @@ void warMode() {
    if (!front){  
    degreesServo = degreesServo + degreesStep;
    
-   if (degreesServo > 180) {
+   if (degreesServo > 170) {
        degreesStep = -degreesStep;
-       degreesServo = 180;
-   } else if (degreesServo < 0) {
+       degreesServo = 170;
+   } else if (degreesServo < -20) {
        degreesStep = -degreesStep;
-       degreesServo = 0;
+       degreesServo = -20;
    } 
    myServo.write(degreesServo);
    }
@@ -104,7 +104,7 @@ void warMode() {
     //delay(500);
       digitalWrite(ledPin,HIGH);
       if (degreesServo+30 > 100 ) { // && !turnedYet) {
-        plabMotors.turnLeft(400,60 - degreesServo);
+        plabMotors.turnLeft(400, (float)(degreesServo - 60)/10);
         Serial.println("LEFT");
         Serial.println(60 - degreesServo);
         //motors.setSpeeds(MAX_SPEED, MAX_SPEED);
@@ -112,7 +112,7 @@ void warMode() {
         turnedYet = true;
       }
       else if(degreesServo+30 < 80 ){ // && !turnedYet) {
-        plabMotors.turnRight(400,degreesServo - 60);
+        plabMotors.turnRight(400,(float)(60 - degreesServo)/5);
         //motors.setSpeeds(MAX_SPEED, MAX_SPEED);
         Serial.println("RIGHT");
         myServo.write(120);
@@ -122,7 +122,7 @@ void warMode() {
       //else {
       //  motors.setSpeeds(MAX_SPEED, MAX_SPEED);
       //}
-      motors.setSpeeds(150, 150);
+      motors.setSpeeds(MAX_SPEED, MAX_SPEED);
        
       myServo.write(60);
       degreesServo = 60;
@@ -172,3 +172,4 @@ while (btSerial.available()) { //Her
     }
   } // Til her
 }
+
