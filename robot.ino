@@ -5,6 +5,10 @@
 #include <NewServo.h>
 #include <Pushbutton.h>
 #include <PLab_ZumoMotors.h>
+#include <PLabBTSerial.h>
+
+#define txPin 2 // Her
+#define rxPin 3 // Her
 
 
 #define LED 13
@@ -20,6 +24,8 @@
 ZumoMotors motors;
 PLab_ZumoMotors plabMotors;
 Pushbutton button(ZUMO_BUTTON); // pushbutton on pin 12
+
+PLabBTSerial btSerial(txPin, rxPin); // Her
  
 #define NUM_SENSORS 6
 unsigned int sensor_values[NUM_SENSORS];
@@ -48,6 +54,7 @@ boolean turnedYet = false;
 
 void setup() {
   Serial.begin(9600);
+  btSerial.begin(9600); // Her
   pinMode(ledPin,OUTPUT);
   myServo.attach(servoPin); 
   myServo.write(90-30);
@@ -75,28 +82,29 @@ void loop() {
   unsigned int time = sonar.ping();
   float distance = sonar.convert_cm(time);
  // Serial.println(distance);
+ 
   if (distance == 0.0) { // sonar gives zero when outside range
-    // Turn off LED and just go forward
-    digitalWrite(ledPin,LOW);
-    //turnedYet = false; 
+      // Turn off LED and just go forward
+      digitalWrite(ledPin,LOW);
+      //turnedYet = false; 
    } else {
-    digitalWrite(ledPin,HIGH);
-    if (degreesServo+30 > 95 ) { // && !turnedYet) {
-      plabMotors.turnLeft(400,95);
-      Serial.println("LEFT");
-      Serial.println(degreesServo+30);
-      motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
-      delay(2000);
-      turnedYet = true;
-    }
-    else if(degreesServo+30 < 85 ){ // && !turnedYet) {
-      plabMotors.turnRight(400,85);
-      motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
-      Serial.println("RIGHT");
-      Serial.println(degreesServo+30);
-      delay(2000);
-      turnedYet = true;
-    }
+      digitalWrite(ledPin,HIGH);
+      if (degreesServo+30 > 95 ) { // && !turnedYet) {
+        plabMotors.turnLeft(400,95);
+        Serial.println("LEFT");
+        Serial.println(degreesServo+30);
+        motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
+        delay(2000);
+        turnedYet = true;
+      }
+      else if(degreesServo+30 < 85 ){ // && !turnedYet) {
+        plabMotors.turnRight(400,85);
+        motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
+        Serial.println("RIGHT");
+        Serial.println(degreesServo+30);
+        delay(2000);
+        turnedYet = true;
+      }
     
    }
 
@@ -127,5 +135,18 @@ void loop() {
     motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
   }
 */
-}
+while (btSerial.available()) { //Her
+    char c = btSerial.read();
+    Serial.write(c);
 
+    if (c == 'w') {
+      Serial.write("war mode");
+    } else if (c == 's') {
+      Serial.write("suicide mode");
+    } else if (c == 't') {
+      Serial.write("tiss mode");
+    } else if (c == 'c') {
+      Serial.write("chill mode");
+    }
+  } // Til her
+}
