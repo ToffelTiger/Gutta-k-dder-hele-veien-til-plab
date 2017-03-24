@@ -3,6 +3,27 @@ import processing.serial.*;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
+private PLabBridge pBridge;
+
+private String received = null;
+
+void bindPLabBridge (PLabBridge bridge) {
+
+  pBridge = bridge;
+  
+  bridge.subscribeMessages (new PLabRecv() {
+    public void receive (String string) {
+    }
+  });
+  size(bridge.getWidth(), bridge.getHeight());
+}
+
+void btWrite(String string) {
+  if (pBridge != null) {
+    pBridge.send(string);
+  }
+}
+
 //
 //  Minimal Processing GUI library.
 //  PLab 2015
@@ -97,13 +118,18 @@ int[] circleColor2 = white;
 int[] war = {80,200,200,50};
 String buttonString4 = "War mode"; 
 
+boolean bluetoothActive = false;
 
 void setup() {
   
   // GUI
-  size(375,620);                // Canvas size is 300 x 200 pixels.
+  size(375,620);
   background(236, 240, 241);   // Background color is gray (128,128,128).
   stroke(0);                    // Stroke color is black (0,0,0)
+}
+
+void btRead(String string) {
+  println("Received: " + string);
 }
 
 void draw() {    // Called for every fram
@@ -120,7 +146,17 @@ void mousePressed() {
   if (mouseInside(war)) {
     circleColor1 = white;
     circleColor2 = green;
+    btWrite("w");
   }
+  else if (mouseInside(suicide)) {
+    btWrite("s");
+  }
+  else if (mouseInside(Chill)) {
+    btWrite("c");
+  }
+  else if (mouseInside(tactical)) {
+    btWrite("t");
+  }  
 }
 
 void mouseReleased() {
