@@ -125,17 +125,17 @@ void mousePressed() {
     else {
       circleColor1 = white;
       circleColor2 = green;
-      btWrite("w");
+      //btWrite("w");
     }
   }
   else if (mouseInside(suicide)) {
-    btWrite("s");
+    //btWrite("s");
   }
   else if (mouseInside(Chill)) {
-    btWrite("c");
+    //btWrite("c");
   }
   else if (mouseInside(tactical)) {
-    btWrite("t");
+    //btWrite("t");
   }  
 }
 
