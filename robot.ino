@@ -20,6 +20,7 @@
 #define FORWARD_SPEED     100
 #define REVERSE_DURATION  200 // ms
 #define TURN_DURATION     300 // ms
+#define MAX_SPEED         400
 
 ZumoMotors motors;
 PLab_ZumoMotors plabMotors;
@@ -48,7 +49,7 @@ NewServo myServo;
 
 
 
-int degreesServo = 0;
+int degreesServo = 80;
 int degreesStep = 10;
 boolean turnedYet = false;
 
@@ -63,9 +64,16 @@ void setup() {
   motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
   
 }
- 
+
 void loop() {
-   
+  warMode();
+}
+ 
+void warMode() {
+
+  static bool front = false;
+
+   if (!front){  
    degreesServo = degreesServo + degreesStep;
    
    if (degreesServo > 180) {
@@ -76,35 +84,49 @@ void loop() {
        degreesServo = 0;
    } 
    myServo.write(degreesServo);
+   }
    //Serial.println(degreesServo); //høyre side = 0, venstre side 180
    
   // Gjør ett ping, og beregn avstanden
   unsigned int time = sonar.ping();
   float distance = sonar.convert_cm(time);
  // Serial.println(distance);
- 
+
   if (distance == 0.0) { // sonar gives zero when outside range
       // Turn off LED and just go forward
       digitalWrite(ledPin,LOW);
+      motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
+      front = false;
       //turnedYet = false; 
    } else {
+    
+    //Serial.println(degreesServo);
+    //delay(500);
       digitalWrite(ledPin,HIGH);
-      if (degreesServo+30 > 95 ) { // && !turnedYet) {
-        plabMotors.turnLeft(400,95);
+      if (degreesServo+30 > 100 ) { // && !turnedYet) {
+        plabMotors.turnLeft(400,60 - degreesServo);
         Serial.println("LEFT");
-        Serial.println(degreesServo+30);
-        motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
-        delay(2000);
+        Serial.println(60 - degreesServo);
+        //motors.setSpeeds(MAX_SPEED, MAX_SPEED);
+       // delay(2000);
         turnedYet = true;
       }
-      else if(degreesServo+30 < 85 ){ // && !turnedYet) {
-        plabMotors.turnRight(400,85);
-        motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
+      else if(degreesServo+30 < 80 ){ // && !turnedYet) {
+        plabMotors.turnRight(400,degreesServo - 60);
+        //motors.setSpeeds(MAX_SPEED, MAX_SPEED);
         Serial.println("RIGHT");
-        Serial.println(degreesServo+30);
-        delay(2000);
+        myServo.write(120);
+      // delay(2000);
         turnedYet = true;
       }
+      //else {
+      //  motors.setSpeeds(MAX_SPEED, MAX_SPEED);
+      //}
+      motors.setSpeeds(150, 150);
+       
+      myServo.write(60);
+      degreesServo = 60;
+      front = true;
     
    }
 
