@@ -7,8 +7,8 @@
 #include <PLab_ZumoMotors.h>
 #include <PLabBTSerial.h>
 
-#define txPin 2
-#define rxPin 3
+#define txPin 2 // Her
+#define rxPin 3 // Her
 
 #define LED 13
 // this might need to be tuned for different lighting conditions, surfaces, etc.
@@ -24,7 +24,7 @@ ZumoMotors motors;
 PLab_ZumoMotors plabMotors;
 Pushbutton button(ZUMO_BUTTON); // pushbutton on pin 12
 
-PLabBTSerial btSerial(txPin, rxPin);
+PLabBTSerial btSerial(txPin, rxPin); // Her
 
 #define NUM_SENSORS 6
 unsigned int sensor_values[NUM_SENSORS];
@@ -53,7 +53,7 @@ boolean turnedYet = false;
 
 void setup() {
   Serial.begin(9600);
-  btSerial.begin(9600);
+  btSerial.begin(9600); // Her
   pinMode(ledPin,OUTPUT);
   myServo.attach(servoPin); 
   myServo.write(90-30);
@@ -134,7 +134,7 @@ void loop() {
   }
 */
 
-  while (btSerial.available()) {
+  while (btSerial.available()) { //Her
     char c = btSerial.read();
     Serial.write(c);
 
@@ -147,7 +147,7 @@ void loop() {
     } else if (c == 'c') {
       Serial.write("chill mode");
     }
-  }
+  } // Til her
   
 }
 
