@@ -60,13 +60,42 @@ void setup() {
   myServo.attach(servoPin); 
   myServo.write(90-30);
   sensors.init();
-  button.waitForButton(); // start when button pressed
-  motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
+  //button.waitForButton(); // start when button pressed
+  
   
 }
 
+int state = 0;
+
 void loop() {
-  warMode();
+
+  
+  while (btSerial.available()) { //Her
+    char c = btSerial.read();
+    Serial.write(c);
+
+    if (c == 'w') {
+      Serial.write("war mode");
+      state = 1;
+      motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
+      
+    } else if (c == 's') {
+      Serial.write("suicide mode");
+      state = 2;
+    } else if (c == 't') {
+      Serial.write("tiss mode");
+    } else if (c == 'c') {
+      Serial.write("chill mode");
+    }
+  } // Til her
+  
+  if (state == 2) {
+    suicideMode();
+  }
+  
+  if (state == 1) {
+    warMode();
+  }
 }
  
 void warMode() {
@@ -79,13 +108,12 @@ void warMode() {
    if (degreesServo > 170) {
        degreesStep = -degreesStep;
        degreesServo = 170;
-   } else if (degreesServo < -20) {
+   } else if (degreesServo < -10) {
        degreesStep = -degreesStep;
-       degreesServo = -20;
+       degreesServo = -10;
    } 
    myServo.write(degreesServo);
    }
-   //Serial.println(degreesServo); //høyre side = 0, venstre side 180
    
   // Gjør ett ping, og beregn avstanden
   unsigned int time = sonar.ping();
@@ -97,31 +125,23 @@ void warMode() {
       digitalWrite(ledPin,LOW);
       motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
       front = false;
-      //turnedYet = false; 
+ 
    } else {
     
     //Serial.println(degreesServo);
     //delay(500);
       digitalWrite(ledPin,HIGH);
-      if (degreesServo+30 > 100 ) { // && !turnedYet) {
+      if (degreesServo+30 > 100 ) {
         plabMotors.turnLeft(400, (float)(degreesServo - 60)/10);
         Serial.println("LEFT");
         Serial.println(60 - degreesServo);
         //motors.setSpeeds(MAX_SPEED, MAX_SPEED);
-       // delay(2000);
-        turnedYet = true;
       }
       else if(degreesServo+30 < 80 ){ // && !turnedYet) {
-        plabMotors.turnRight(400,(float)(60 - degreesServo)/5);
-        //motors.setSpeeds(MAX_SPEED, MAX_SPEED);
+        plabMotors.turnRight(400,(float)(60 - degreesServo)/3);
         Serial.println("RIGHT");
         myServo.write(120);
-      // delay(2000);
-        turnedYet = true;
       }
-      //else {
-      //  motors.setSpeeds(MAX_SPEED, MAX_SPEED);
-      //}
       motors.setSpeeds(MAX_SPEED, MAX_SPEED);
        
       myServo.write(60);
@@ -150,26 +170,13 @@ void warMode() {
     delay(TURN_DURATION);
     motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
   }
-  /*
-  else
-  {
-    // otherwise, go straight
-    motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
-  }
-*/
-while (btSerial.available()) { //Her
-    char c = btSerial.read();
-    Serial.write(c);
-
-    if (c == 'w') {
-      Serial.write("war mode");
-    } else if (c == 's') {
-      Serial.write("suicide mode");
-    } else if (c == 't') {
-      Serial.write("tiss mode");
-    } else if (c == 'c') {
-      Serial.write("chill mode");
-    }
-  } // Til her
 }
+
+void suicideMode(){
+    motors.setSpeeds(400, 400);
+    delay(5000);
+    motors.setSpeeds(0, 0);
+    state = 0;
+}
+
 
